@@ -51,12 +51,14 @@
       left: 50%;
       transform: translate(-50%, -50%);
       color: #1A324B; /* Color de texto: azul oscuro */
-      font-size: 18px;
+      -webkit-text-stroke: 0.6px #6c757d; /* Borde grisáceo */
+      font-size: 24px; /* Letra más grande en escritorio */
       font-weight: bold;
       font-family: 'Lost in South', cursive;
       padding: 5px 10px;
       border-radius: 5px;
       background: none;
+      text-shadow: 2px 2px 4px #f0f0f0; /* Sombra blanca más sólida (gris claro) */
     }
     .image-container:hover .overlay-text {
       transform: translate(-50%, -50%) scale(1.2) rotate(20deg);
@@ -96,9 +98,11 @@
         transform: none;
         background: none; /* Eliminamos el fondo negro */
         color: #1A324B; /* Color de texto: azul oscuro */
-        font-size: 14px; /* Un tamaño un poco más pequeño */
+        -webkit-text-stroke: 0.4px #6c757d; /* Borde grisáceo para móvil */
+        font-size: 20px; /* Letra más grande en móvil */
         padding: 2px 5px; /* Menos padding */
         border-radius: 0; /* Sin borde redondeado */
+        text-shadow: 1.5px 1.5px 3px #f0f0f0; /* Sombra blanca más sólida (gris claro) para móvil */
       }
       /* Estilo específico para la quinta imagen en móvil */
       .gallery .image-container:nth-child(5) {
