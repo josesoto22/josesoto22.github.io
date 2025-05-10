@@ -33,7 +33,6 @@
       border-radius: 10px;
       text-align: center;
       transition: transform 0.2s ease-in-out, z-index 0.2s ease-in-out;
-      overflow: hidden; /* Aseguramos que el contenido se recorte */
     }
     .image-container:hover {
       z-index: 100;
@@ -48,24 +47,19 @@
     }
     .overlay-text {
       position: absolute;
+      top: 50%;
       left: 50%;
-      top: 60%; /* Ajustamos la posición vertical un poco más abajo */
-      transform: translateX(-50%) translateY(-50%); /* Centrado */
+      transform: translate(-50%, -50%);
       color: #1A324B; /* Color de texto: azul oscuro */
-      font-size: 24px; /* Letra más grande */
+      font-size: 18px;
       font-weight: bold;
       font-family: 'Lost in South', cursive;
       padding: 5px 10px;
       border-radius: 5px;
       background: none;
-      text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; /* Sombra negra para contraste */
-      white-space: nowrap; /* Evita que el texto se rompa */
-      box-sizing: border-box; /* Incluye padding y border en el ancho y alto */
-      max-width: 90%; /* Asegura que el texto no sea demasiado ancho */
-      text-align: center; /* Centra el texto si ocupa menos del 90% */
     }
     .image-container:hover .overlay-text {
-      transform: translateX(-50%) translateY(-50%) scale(1.1) rotate(10deg); /* Reducimos un poco la escala y la rotación en hover */
+      transform: translate(-50%, -50%) scale(1.2) rotate(20deg);
     }
     @media (max-width: 600px) {
       .logo-container {
@@ -82,7 +76,7 @@
       }
       .image-container {
         border-radius: 0; /* ¡BORRAMOS LOS BORDES REDONDEADOS EN MÓVILES! */
-        overflow: hidden; /* Aseguramos que el contenido se recorte */
+        overflow: hidden;
       }
       .image-container a {
         display: block;
@@ -97,19 +91,14 @@
       }
       .overlay-text {
         position: absolute;
-        top: 65%; /* Ajustamos la posición vertical en móvil */
-        left: 50%;
-        transform: translateX(-50%) translateY(-50%); /* Centrado */
+        bottom: 5px; /* Lo movemos más abajo */
+        left: 5px;
+        transform: none;
         background: none; /* Eliminamos el fondo negro */
         color: #1A324B; /* Color de texto: azul oscuro */
-        font-size: 18px; /* Tamaño de letra más grande en móvil */
+        font-size: 14px; /* Un tamaño un poco más pequeño */
         padding: 2px 5px; /* Menos padding */
         border-radius: 0; /* Sin borde redondeado */
-        text-shadow: 1px 1px 2px black;
-        white-space: nowrap; /* Evita el salto de línea */
-        box-sizing: border-box; /* Incluye padding y border */
-        max-width: 90%; /* Asegura que el texto no sea demasiado ancho */
-        text-align: center; /* Centra el texto */
       }
       /* Estilo específico para la quinta imagen en móvil */
       .gallery .image-container:nth-child(5) {
