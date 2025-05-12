@@ -63,6 +63,19 @@
     .image-container:hover .overlay-text {
       transform: translate(-50%, -50%) scale(1.2) rotate(20deg);
     }
+
+    /* Estilo para la vista de escritorio */
+    @media (min-width: 601px) {
+      .gallery {
+        /* Definimos las columnas base */
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      /* Hacemos que la última imagen ocupe dos columnas */
+      .gallery .image-container:last-child {
+        grid-column: auto / span 2; /* Ocupa dos columnas */
+      }
+    }
+
     @media (max-width: 600px) {
       .logo-container {
         margin-top: 15px;
