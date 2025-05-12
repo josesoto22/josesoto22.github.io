@@ -10,6 +10,10 @@
       font-family: 'Lost in South';
       src: url('LostInSouth.ttf') format('truetype');
     }
+    @font-face {
+      font-family: 'Solway';
+      src: url('Solway.ttf') format('truetype');
+    }
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -50,15 +54,12 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #1A324B; /* Color de texto: azul oscuro */
-      -webkit-text-stroke: 0.6px #6c757d; /* Borde grisáceo */
-      font-size: 24px; /* Letra más grande en escritorio */
       font-weight: bold;
-      font-family: 'Lost in South', cursive;
+      font-family: 'Lost in South', cursive; /* Fuente por defecto para PC */
       padding: 5px 10px;
       border-radius: 5px;
       background: none;
-      text-shadow: 2px 2px 4px #f0f0f0; /* Sombra blanca más sólida (gris claro) */
+      transition: transform 0.3s ease-in-out;
     }
     .image-container:hover .overlay-text {
       transform: translate(-50%, -50%) scale(1.2) rotate(20deg);
@@ -66,11 +67,15 @@
 
     /* Estilo para la vista de escritorio */
     @media (min-width: 601px) {
-      .gallery {
-        /* Definimos las columnas base */
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      .overlay-text {
+        color: white;
+        font-size: 18px;
+        text-shadow:
+          -1px -1px 0 #000,
+           1px -1px 0 #000,
+          -1px  1px 0 #000,
+           1px  1px 0 #000;
       }
-      /* Hacemos que la última imagen ocupe dos columnas */
       .gallery .image-container:last-child {
         grid-column: auto / span 2; /* Ocupa dos columnas */
       }
@@ -90,7 +95,7 @@
         padding: 10px;
       }
       .image-container {
-        border-radius: 0; /* ¡BORRAMOS LOS BORDES REDONDEADOS EN MÓVILES! */
+        border-radius: 0;
         overflow: hidden;
       }
       .image-container a {
@@ -99,27 +104,24 @@
       .image-container img {
         width: 100%;
         height: auto;
-        transition: transform 0.2s ease-in-out; /* ¡MISMA TRANSICIÓN PARA AMBOS ESTADOS! */
+        transition: transform 0.2s ease-in-out;
       }
       .image-container:hover img {
-        transform: scale(1.05) !important; /* Ligeramente más grande al "hover" en móviles */
+        transform: scale(1.05) !important;
       }
       .overlay-text {
-        position: absolute;
-        bottom: 5px; /* Lo movemos más abajo */
+        bottom: 5px;
         left: 5px;
         transform: none;
-        background: none; /* Eliminamos el fondo negro */
-        color: #1A324B; /* Color de texto: azul oscuro */
-        -webkit-text-stroke: 0.4px #6c757d; /* Borde grisáceo para móvil */
-        font-size: 20px; /* Letra más grande en móvil */
-        padding: 2px 5px; /* Menos padding */
-        border-radius: 0; /* Sin borde redondeado */
-        text-shadow: 1.5px 1.5px 3px #f0f0f0; /* Sombra blanca más sólida (gris claro) para móvil */
+        color: white; /* Color de texto: blanco */
+        -webkit-text-stroke: 0.6px black; /* Borde negro un poco más grueso para móvil */
+        font-size: 20px; /* Tamaño de fuente para móvil */
+        text-shadow: none; /* Sin sombra para móvil */
+        font-family: 'Solway', sans-serif; /* Fuente para móvil */
       }
-      /* Estilo específico para la quinta imagen en móvil */
-      .gallery .image-container:nth-child(5) {
-        grid-column: 1 / -1; /* Ocupa todo el ancho de la grid */
+      /* La imagen ancha ocupa todo el ancho en la fila */
+      .gallery .image-container:last-child {
+        grid-column: 1 / -1;
       }
     }
   </style>
