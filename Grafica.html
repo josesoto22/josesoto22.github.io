@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imagen Rebotando con Texto</title>
+  <style>
+    @font-face {
+      font-family: 'Solway';
+      src: url('Solway.ttf') format('truetype'); /* Asegúrate de tener el archivo Solway.ttf en la misma carpeta */
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #B1DEEC; /* Fondo azul claro */
+      display: flex;
+      flex-direction: column; /* Para apilar logo, animación y texto */
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .logo-container {
+      margin-bottom: 20px; /* Espacio entre el logo y la animación */
+    }
+
+    #container {
+      position: relative;
+      overflow: hidden;
+      width: 500px; /* Ancho para PC */
+      height: 500px; /* Alto para PC */
+      max-width: 90%;
+      max-height: 90%;
+      border-bottom: 2px solid transparent; /* Línea transparente para mantener el espacio */
+      margin-bottom: 20px; /* Espacio entre la animación y el texto */
+    }
+
+    #balon-imagen {
+      position: absolute;
+      left: 50%;
+      bottom: 0; /* Inicia en la parte inferior */
+      transform: translateX(-50%);
+      height: auto; /* Mantiene la proporción de la imagen */
+      width: 400px; /* Tamaño de la imagen para PC */
+      transition: bottom 0.3s ease-out; /* Transición suave para detenerse */
+    }
+
+    h1#texto-petrobras {
+      font-family: 'Solway', sans-serif;
+      color: purple; /* Puedes ajustar a azul/morado */
+      text-align: center;
+      max-width: 80%;
+      margin-top: 20px; /* Espacio entre la imagen y el texto */
+      font-size: 1.5em; /* Tamaño del encabezado */
+    }
+
+    /* Estilos específicos para pantallas más pequeñas (móviles) */
+    @media (max-width: 600px) {
+      #container {
+        width: 350px; /* Ancho para móvil */
+        height: 350px; /* Alto para móvil */
+      }
+      #balon-imagen {
+        width: 315px; /* Tamaño de la imagen para móvil */
+      }
+      h1#texto-petrobras {
+        font-size: 1.2em; /* Ajustar tamaño de fuente en móvil */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo-container">
+    <img src="fer.png" style="max-width: 300px; width: 80%; height: auto;" alt="Logo de la página">
+  </div>
+
+  <div id="container">
+    <img id="balon-imagen" src="ima.jpg" alt="Balón">
+  </div>
+
+  <h1 id="texto-petrobras">
+    Petrobras ha firmado un contrato con Honeywell UOP para adoptar la tecnología HEFA (Ésteres Hidroprocesados y Ácidos Grasos) en la producción de biocombustibles sostenibles. Este avance permitirá la fabricación de diésel renovable (HVO) y biojet (SAF) en la Refinería Presidente Bernardes, en Cubatão, São Paulo. La producción utilizará aceite de soja (70%) y sebo bovino (30%), con una capacidad de procesamiento de 2.700 metros cúbicos diarios, reforzando el compromiso de Petrobras con la sostenibilidad.
+  </h1>
+
+  <script>
+    const balonImagen = document.getElementById('balon-imagen');
+    const container = document.getElementById('container');
+
+    let velocidadY = 0;
+    let gravedad = 1;
+    let amortiguacion = 0.8; // Factor de pérdida de energía en cada rebote
+    let posicionY = 0;
+    let alturaContainer;
+    let reboteEnCurso = true;
+
+    function animarRebote() {
+      if (!reboteEnCurso) return;
+
+      velocidadY -= gravedad;
+      posicionY += velocidadY;
+
+      // Detección de colisión con el suelo
+      if (posicionY < 0) {
+        posicionY = 0;
+        velocidadY = -velocidadY * amortiguacion;
+        if (Math.abs(velocidadY) < 0.1) {
+          velocidadY = 0;
+          reboteEnCurso = false;
+        }
+      }
+
+      balonImagen.style.bottom = posicionY + 'px';
+
+      if (reboteEnCurso) {
+        requestAnimationFrame(animarRebote);
+      }
+    }
+
+    // Iniciar la animación al cargar la página
+    window.onload = () => {
+      alturaContainer = container.offsetHeight;
+
+      // Establecer el tamaño inicial de la imagen
+      if (window.innerWidth <= 600) {
+        balonImagen.style.width = '315px';
+      } else {
+        balonImagen.style.width = '400px';
+      }
+
+      velocidadY = 15; // Impulso inicial hacia arriba
+      requestAnimationFrame(animarRebote);
+    };
+
+    // Ajustar el tamaño de la imagen en tiempo real si la ventana cambia de tamaño (opcional)
+    window.addEventListener('resize', () => {
+      alturaContainer = container.offsetHeight;
+      if (window.innerWidth <= 600) {
+        balonImagen.style.width = '315px';
+      } else {
+        balonImagen.style.width = '400px';
+      }
+    });
+  </script>
+
+</body>
+</html>
