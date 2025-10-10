@@ -1,166 +1,155 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hidrobiodiesel</title>
-  <link rel="icon" type="image/x-icon" href="reff2.ico">
-  <style>
-    @font-face {
-      font-family: 'Lost in South';
-      src: url('LostInSouth.ttf') format('truetype');
-    }
-    @font-face {
-      font-family: 'Solway';
-      src: url('Solway.ttf') format('truetype');
-    }
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #B1DEEC; /* Fondo azul claro */
-    }
-    .logo-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 10px;
-      padding: 20px;
-    }
-    .image-container {
-      position: relative;
-      display: inline-block;
-      border-radius: 10px;
-      text-align: center;
-      transition: transform 0.2s ease-in-out, z-index 0.2s ease-in-out;
-    }
-    .image-container:hover {
-      z-index: 100;
-    }
-    .image-container img {
-      width: 100%;
-      height: auto;
-      transition: transform 0.2s ease-in-out;
-    }
-    .image-container:hover img {
-      transform: scale(1.2) rotate(20deg);
-    }
-    .overlay-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-weight: bold;
-      font-family: 'Lost in South', cursive; /* Fuente por defecto para PC */
-      padding: 5px 10px;
-      border-radius: 5px;
-      background: none;
-      transition: transform 0.3s ease-in-out;
-    }
-    .image-container:hover .overlay-text {
-      transform: translate(-50%, -50%) scale(1.2) rotate(20deg);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wind Power</title>
+	<link rel="icon" type="image/x-icon" href="reff2.ico">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('fondo.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
 
-    /* Estilo para la vista de escritorio */
-    @media (min-width: 601px) {
-      .overlay-text {
-        color: white;
-        font-size: 18px;
-        text-shadow:
-          -1px -1px 0 #000,
-           1px -1px 0 #000,
-          -1px  1px 0 #000,
-           1px  1px 0 #000;
-      }
-      .gallery .image-container:last-child {
-        grid-column: auto / span 2; /* Ocupa dos columnas */
-      }
-    }
+        /* Centrar el logo */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
 
-    @media (max-width: 600px) {
-      .logo-container {
-        margin-top: 15px;
-      }
-      .logo-container img {
-        width: 90%;
-        max-width: 350px;
-      }
-      .gallery {
-        grid-template-columns: repeat(2, 1fr); /* Dos columnas por fila */
-        gap: 8px; /* Espacio entre las imágenes */
-        padding: 10px;
-      }
-      .image-container {
-        border-radius: 0;
-        overflow: hidden;
-      }
-      .image-container a {
-        display: block;
-      }
-      .image-container img {
-        width: 100%;
-        height: auto;
-        transition: transform 0.2s ease-in-out;
-      }
-      .image-container:hover img {
-        transform: scale(1.05) !important;
-      }
-      .overlay-text {
-        bottom: 5px;
-        left: 5px;
-        transform: none;
-        color: white; /* Color de texto: blanco */
-        -webkit-text-stroke: 0.6px black; /* Borde negro un poco más grueso para móvil */
-        font-size: 20px; /* Tamaño de fuente para móvil */
-        text-shadow: none; /* Sin sombra para móvil */
-        font-family: 'Solway', sans-serif; /* Fuente para móvil */
-      }
-      /* La imagen ancha ocupa todo el ancho en la fila */
-      .gallery .image-container:last-child {
-        grid-column: 1 / -1;
-      }
-    }
-  </style>
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .image-container {
+            position: relative;
+            display: inline-block;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.2s ease-in-out, z-index 0.2s ease-in-out;
+        }
+
+        .image-container:hover {
+            z-index: 100;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .image-container:hover img {
+            transform: scale(1.2) rotate(20deg);
+        }
+
+        .pin {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%) scale(1);
+            width: 20%;
+            max-width: 40px;
+            z-index: 10;
+            pointer-events: none;
+            transition: transform 0.05s ease-in-out;
+        }
+
+        .image-container:hover .pin {
+            transform: translate(60%, -60px) scale(1.3);
+        }
+
+        .image-container:not(:hover) .pin {
+            transform: translateX(-50%) scale(1);
+        }
+
+        .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .image-container:hover .overlay-text {
+            transform: translate(-50%, -50%) scale(1.2) rotate(20deg);
+        }
+
+        @keyframes oscillate {
+            0% { transform: rotate(20deg); }
+            25% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+            75% { transform: rotate(-2deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .image-container:not(:hover) img:not(.pin) {
+            animation: oscillate 0.5s ease-out forwards;
+        }
+
+        @media (max-width: 600px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                padding: 10px;
+            }
+
+            .overlay-text {
+                font-size: 14px;
+                padding: 3px 8px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="logo-container">
-    <img src="fer.png" style="width: 500px;" alt="logo">
-  </div>
-  <div class="gallery">
-    <div class="image-container">
-      <a href="Referencias.html">
-        <img src="im4gen.png" alt="Imagen 1">
-        <div class="overlay-text">Referencias</div>
-      </a>
+    <!-- Logo centrado -->
+    <div class="logo-container">
+        <img src="logo.png" style="width: 300px;" alt="logo">
     </div>
-    <div class="image-container">
-      <a href="Grafica.html">
-        <img src="im4gen2.png" alt="Imagen 2">
-        <div class="overlay-text">Otra gráfica</div>
-      </a>
+<p> </p>
+    <!-- Galería de imágenes -->
+    <div class="gallery">
+        <div class="image-container">
+            <img class="pin" alt="Pin aleatorio">
+            <a href="reje.html">
+                <img src="flappy.jpg" alt="Imagen 1">
+
+            </a>
+        </div>
+        <div class="image-container">
+            <img class="pin" alt="Pin aleatorio">
+            <a href="draw.html?img=Imagen%202.jpg">
+                <img src="rr.jpg" alt="Imagen 2">
+            </a>
+        </div>
     </div>
-    <div class="image-container">
-      <a href="canvas.pdf">
-        <img src="im4gen66.png" alt="Imagen 3">
-        <div class="overlay-text">Cartel</div>
-      </a>
-    </div>
-    <div class="image-container">
-      <a href="Hidrobiodiesel.pdf">
-        <img src="im4gen77.png" alt="Imagen 4">
-        <div class="overlay-text">Documento</div>
-      </a>
-    </div>
-    <div class="image-container">
-      <a href="https://www.youtube.com/watch?v=K4yQCRreRQ0">
-        <img src="im4gen5.png" alt="Imagen Ancha">
-        <div class="overlay-text">Video del HVO por carwow.es</div>
-      </a>
-    </div>
-  </div>
+
+    <!-- Script para asignar pins aleatorios -->
+    <script>
+        const pinOptions = ['pin.png'];
+        const pins = document.querySelectorAll('.pin');
+
+        pins.forEach(pin => {
+            const randomPin = pinOptions[Math.floor(Math.random() * pinOptions.length)];
+            pin.src = randomPin;
+        });
+    </script>
 </body>
 </html>
+
