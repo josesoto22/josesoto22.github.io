@@ -1,25 +1,33 @@
+// main.js
+
 // --- CONFIGURACIÓN DE LA ESCENA Y CÁMARA ---
 const scene = new THREE.Scene();
+
+// CÁMARA (FOV, Aspecto, Cerca, Lejos)
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+// RENDERER
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Fondo de la escena (Gris claro)
 scene.background = new THREE.Color(0xf0f0f0); 
 
-// Iluminación
+// --- ILUMINACIÓN ---
+// Luz ambiental suave para evitar sombras completamente oscuras
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
 scene.add(ambientLight);
 
+// Luz direccional (como un sol) para dar volumen
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.position.set(5, 10, 7.5);
+directionalLight.position.set(5, 10, 7.5); // Posicionada para iluminar desde arriba/frente
 scene.add(directionalLight);
 
-// --- 🎯 NUEVO: CONTROLES DE ÓRBITA ---
+// --- CONTROLES DE ÓRBITA (Para mover el modelo con el ratón) ---
+// Vincula los controles a la cámara y al elemento DOM del renderizador
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
-// Opcional: configurar límites de zoom o movimiento
-// controls.enableDamping = true; // Para un movimiento más suave (requiere .update() en el loop)
-// controls.dampingFactor = 0.05;
+
 
 // --- CARGADOR DE OBJ ---
 const objLoader = new THREE.OBJLoader();
@@ -30,44 +38,50 @@ objLoader.load(
     // Función cuando el modelo se carga
     function (object) {
         
-        // Aplicar material por defecto si no hay MTL
+        // --- 1. Manejo de Materiales ---
         object.traverse(function (child) {
             if (child.isMesh) {
+                // Aplica un material por defecto si el OBJ no tiene MTL o si el material no es válido
                 if (!child.material || child.material.isMeshBasicMaterial) {
                     child.material = new THREE.MeshPhongMaterial({
-                        color: 0xaaaaaa, 
-                        side: THREE.DoubleSide
+                        color: 0xaaaaaa, // Color gris por defecto
+                        side: THREE.DoubleSide,
+                        shininess: 30 // Para un poco de brillo
                     });
                 }
             }
         });
 
-        // Centrar y dimensionar el objeto
+        // --- 2. Centrado y Posicionamiento Automático ---
         const box = new THREE.Box3().setFromObject(object);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
+        // Mover el objeto para que su centro esté en el origen (0, 0, 0)
         object.position.sub(center);
 
+        // Calcular la distancia necesaria de la cámara para que el objeto quepa en la vista
         const maxDim = Math.max(size.x, size.y, size.z);
         const fov = camera.fov * (Math.PI / 180);
         let cameraDistance = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-        cameraDistance *= 1.5; 
+        cameraDistance *= 1.5; // Añadir un margen
 
         camera.position.z = cameraDistance;
         camera.lookAt(scene.position); 
         
-        // 🎯 IMPORTANTE: Hacer que los controles miren al centro del objeto
-        controls.target.copy(center); // Establece el punto de foco de los controles
+        // Establecer el punto de foco de los OrbitControls en el centro del objeto
+        controls.target.copy(scene.position); 
         controls.update();
         
+        // --- 3. Añadir a la escena ---
         scene.add(object);
 
-        console.log("Modelo Real.obj cargado exitosamente.");
+        console.log("Modelo Real.obj cargado y configurado exitosamente.");
     },
     // Función de progreso (opcional)
     function (xhr) {
-        console.log((xhr.loaded / xhr.total * 100) + '% cargado');
+        // Muestra el progreso de la carga en la consola
+        console.log((xhr.loaded / xhr.total * 100).toFixed(2) + '% cargado');
     },
     // Función de error
     function (error) {
@@ -75,26 +89,25 @@ objLoader.load(
     }
 );
 
-// --- ANIMACIÓN Y RENDER (MODIFICADA) ---
+// --- ANIMACIÓN Y RENDER ---
 function animate() {
+    // Solicita al navegador que prepare el siguiente frame
     requestAnimationFrame(animate);
 
-    // 🎯 NUEVO: Actualiza los controles en cada cuadro
-    // controls.update(); // SOLO si usas controls.enableDamping = true;
-    controls.update(); // Actualiza siempre para cualquier cambio en la entrada del usuario
+    // Actualiza los controles de órbita para aplicar la interacción del mouse
+    controls.update(); 
 
-    // NO necesitamos la rotación automática si el usuario va a moverlo
-    // if (window.loadedObject) {
-    //     window.loadedObject.rotation.y += 0.005; 
-    // }
-
+    // Renderiza la escena
     renderer.render(scene, camera);
 }
 animate();
 
-// --- RESPONSIVIDAD ---
+// --- RESPONSIVIDAD (Ajustar al redimensionar la ventana) ---
 window.addEventListener('resize', () => {
+    // Actualiza el aspecto de la cámara
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+    
+    // Ajusta el tamaño del renderizador
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
