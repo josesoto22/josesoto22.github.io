@@ -3,18 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor 3D Interactivo - Real.obj</title>
+    <title>Visor 3D Interactivo de Real.obj</title>
+    
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #f0f0f0; /* Color de fondo por defecto */
+        }
+        canvas { 
+            display: block; 
+        }
     </style>
-</head>
-<body>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
     
-    <script src="./main.js"></script>
+    <script>
+        // --- CONFIGURACIÓN DE LA ESCENA Y CÁMARA ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Fondo de la escena
+        scene.background = new THREE.Color(0xf0f0f0); 
+
+        // --- ILUMINACIÓN ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(5, 10, 7.5);
+        scene.add(directionalLight);
+
+        // --- CONTROLES DE ÓRBITA ---
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        // --- CARGADOR DE OBJ ---
+        const objLoader = new THREE.OBJLoader();
+        // La ruta debe ser relativa al archivo index.html
+        const objPath = './Real.obj'; 
+
+        objLoader.load(
+            objPath,
+            function (object) {
+                
+                // 1. Manejo de Materiales (Aplica gris por defecto si no hay MTL)
+                object.traverse(function (child) {
+                    if (child.isMesh) {
+                        if (!child.material || child.material.isMeshBasicMaterial) {
+                            child.material = new THREE.MeshPhongMaterial({
+                                color: 0xaaaaaa, // Color gris por defecto
+                                side: THREE.DoubleSide,
+                                shininess: 30 
+                            });
+                        }
+                    }
+                });
+
+                // 2. Centrado y Posicionamiento Automático
+                const box = new THREE.Box3().setFromObject(object);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+
+                // Mover el objeto al origen (0, 0, 0)
+                object.position.sub(center);
+
+                // Calcular la distancia de la cámara para que el objeto quepa
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = camera.fov * (Math.PI / 180);
+                let cameraDistance = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+                cameraDistance *= 1.5; 
+
+                camera.position.z = cameraDistance;
+                camera.lookAt(scene.position); 
+                
+                // Establece el punto de foco de los controles en el centro (0,0,0)
+                controls.target.copy(scene.position); 
+                controls.update();
+                
+                // 3. Añadir a la escena
+                scene.add(object);
+
+                console.log("Modelo Real.obj cargado y configurado exitosamente.");
+            },
+            // Función de progreso
+            function (xhr) {
+                console.log((xhr.loaded / xhr.total * 100).toFixed(2) + '% cargado');
+            },
+            // Función de error
+            function (error) {
+                console.error('Error al cargar el archivo OBJ:', error);
+            }
+        );
+
+        // --- ANIMACIÓN Y RENDER ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Actualiza los controles de órbita para aplicar la interacción del mouse
+            controls.update(); 
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // --- RESPONSIVIDAD ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
 </body>
 </html>
