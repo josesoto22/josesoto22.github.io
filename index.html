@@ -1,1 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora CFE BCS 2026 - Completa</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f1; padding: 20px; color: #333; }
+        .container { max-width: 650px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; }
+        h2 { color: #004a2f; text-align: center; border-bottom: 3px solid #004a2f; padding-bottom: 10px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1em; }
+        button { width: 100%; padding: 15px; background-color: #004a2f; color: white; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        button:hover { background-color: #006b44; }
+        #resultado { margin-top: 25px; padding: 20px; border-radius: 8px; display: none; border: 1px solid #2e7d32; background-color: #e8f5e9; }
+        .hidden { display: none; }
+        .note { font-size: 0.8em; color: #666; font-style: italic; margin-top: 5px; }
+    </style>
+</head>
+<body>
 
+<div class="container">
+    <h2>Calculadora de Energía CFE</h2>
+    
+    <div class="input-group">
+        <label>Tipo de Tarifa</label>
+        <select id="tipoTarifa" onchange="ajustarCampos()">
+            <option value="GDMTH">GDMTH (Media Tensión Horaria)</option>
+            <option value="GDMTO">GDMTO (Media Tensión Ordinaria)</option>
+            <option value="GDBT">GDBT (Gran Demanda Baja Tensión)</option>
+            <option value="PDBT">PDBT (Pequeña Demanda Baja Tensión)</option>
+            <option value="1C">Tarifa 1C (Hogar - La Paz)</option>
+            <option value="1E">Tarifa 1E (Hogar - 32°C Mín.)</option>
+            <option value="1F">Tarifa 1F (Hogar - Clima Extremo)</option>
+            <option value="DAC">Tarifa DAC (Hogar Alto Consumo)</option>
+        </select>
+    </div>
+
+    <div class="input-group" id="grupoTemporada">
+        <label>Temporada</label>
+        <select id="temporada">
+            <option value="verano">Verano (Mayo - Octubre)</option>
+            <option value="invierno">Fuera de Verano (Noviembre - Abril)</option>
+        </select>
+        <p class="note">Hoy es mayo de 2026: Ya aplica Tarifa de Verano.</p>
+    </div>
+
+    <!-- Campos de Entrada -->
+    <div id="campoDemanda" class="input-group">
+        <label>Demanda Máxima (kW)</label>
+        <input type="number" id="demanda">
+    </div>
+
+    <div id="consumoSimple" class="input-group hidden">
+        <label>Consumo Total (kWh)</label>
+        <input type="number" id="kwhTotal">
+    </div>
+
+    <div id="consumoHorario">
+        <div class="input-group">
+            <label>Consumo Base (kWh)</label>
+            <input type="number" id="kwhBase">
+        </div>
+        <div class="input-group">
+            <label>Consumo Intermedio (kWh)</label>
+            <input type="number" id="kwhInter">
+        </div>
+    </div>
+
+    <div id="campoFP" class="input-group">
+        <label>Factor de Potencia (%)</label>
+        <input type="number" id="fp">
+    </div>
+
+    <button onclick="calcularTodo()">Calcular Total a Pagar</button>
+
+    <div id="resultado">
+        <strong>Total Estimado: </strong> <span id="totalMonto" style="font-size: 1.4em;"></span>
+        <div id="desglose" style="margin-top: 10px; font-size: 0.9em; border-top: 1px solid #ccc; padding-top: 10px;"></div>
+    </div>
+</div>
+
+<script>
+    function ajustarCampos() {
+        const t = document.getElementById('tipoTarifa').value;
+        const esDomestica = ['1C', '1E', '1F', 'DAC'].includes(t);
+        
+        document.getElementById('campoDemanda').classList.toggle('hidden', esDomestica || t === 'PDBT');
+        document.getElementById('consumoSimple').classList.toggle('hidden', t === 'GDMTH');
+        document.getElementById('consumoHorario').classList.toggle('hidden', t !== 'GDMTH');
+        document.getElementById('campoFP').classList.toggle('hidden', esDomestica || t === 'PDBT');
+        document.getElementById('grupoTemporada').classList.toggle('hidden', !['1C', '1E', '1F'].includes(t));
+    }
+
+    function calcularTodo() {
+        const t = document.getElementById('tipoTarifa').value;
+        const temp = document.getElementById('temporada').value;
+        let subtotal = 0;
+        let detalle = "";
+        
+        const demanda = parseFloat(document.getElementById('demanda').value) || 0;
+        const kwh = parseFloat(document.getElementById('kwhTotal').value) || 0;
+        const base = parseFloat(document.getElementById('kwhBase').value) || 0;
+        const inter = parseFloat(document.getElementById('kwhInter').value) || 0;
+        const fp = parseFloat(document.getElementById('fp').value) || 100;
+
+        // --- Lógica Industrial/Comercial ---
+        if (t === "GDMTH") {
+            const prePotencia = demanda * 280.65; // Distribución + Capacidad
+            const preEnergia = (base * 2.08) + (inter * 2.64); // Basado en recibo
+            let preSub = 414.90 + preEnergia + prePotencia;
+            let bonif = (fp > 90) ? preSub * ((fp - 90) / 100) * 0.15 : 0;
+            subtotal = preSub - bonif;
+            detalle = `Cargo Fijo: $414.90<br>Potencia: $${prePotencia.toFixed(2)}<br>Energía: $${preEnergia.toFixed(2)}<br>Bonif. FP: -$${bonif.toFixed(2)}`;
+        } 
+        else if (t === "PDBT") {
+            subtotal = 65.20 + (kwh * 4.15);
+            detalle = `Cargo Fijo: $65.20<br>Energía: $${(kwh * 4.15).toFixed(2)}`;
+        }
+        // --- Lógica Residencial (1C, 1E, 1F) ---
+        else if (['1C', '1E', '1F'].includes(t)) {
+            let limites = {
+                '1C': { basico: 150, intermedio: 150 },
+                '1E': { basico: 300, intermedio: 600 },
+                '1F': { basico: 1200, intermedio: 1300 }
+            };
+            
+            // Si es verano, los límites crecen significativamente
+            let b = temp === 'verano' ? limites[t].basico * 2 : limites[t].basico;
+            let i = temp === 'verano' ? limites[t].intermedio * 2 : limites[t].intermedio;
+            
+            let costo = 0;
+            if (kwh <= b) {
+                costo = kwh * 0.85;
+                detalle = `Consumo Básico: $${costo.toFixed(2)}`;
+            } else if (kwh <= (b + i)) {
+                costo = (b * 0.85) + ((kwh - b) * 1.05);
+                detalle = `Consumo Básico + Intermedio: $${costo.toFixed(2)}`;
+            } else {
+                costo = (b * 0.85) + (i * 1.05) + ((kwh - b - i) * 3.40);
+                detalle = `Consumo con Excedente: $${costo.toFixed(2)}`;
+            }
+            subtotal = costo;
+        }
+        else if (t === "DAC") {
+            subtotal = 145.00 + (kwh * 6.50); // Sin subsidio[cite: 1]
+            detalle = `Tarifa de Alto Consumo (Sin Subsidio)<br>Energía: $${(kwh * 6.50).toFixed(2)}`;
+        }
+
+        let iva = subtotal * 0.16;
+        let total = subtotal + iva;
+
+        document.getElementById('resultado').style.display = 'block';
+        document.getElementById('totalMonto').innerText = '$' + total.toLocaleString('es-MX', {minimumFractionDigits: 2});
+        document.getElementById('desglose').innerHTML = detalle + `<br><strong>IVA (16%): $${iva.toFixed(2)}</strong>`;
+    }
+    
+    // Inicializar campos
+    ajustarCampos();
+</script>
+
+</body>
+</html>
